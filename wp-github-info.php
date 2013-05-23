@@ -3,7 +3,7 @@
 Plugin Name: CF GitHub Info 
 Plugin URI: http://crowdfavorite.com/wordpress/plugins/ 
 Description: Get latest version and release date from GitHub. Includes local caching with filtered cache timeout setting. 
-Version: 1.0 
+Version: 1.1 
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com
 */
@@ -79,6 +79,14 @@ function cfghi_get_remote_data($repo_url) {
 	$commit_url = $current_tag = 0;
 // loop through tags to find latest
 	foreach ($tags as $tag) {
+		// on a rate limit exceeded error, the following is returned
+		// stdClass Object (
+		//		[message] => API Rate Limit Exceeded for 67.136.188.202
+		//	)
+		// this is a hack to workaround that
+		if (!isset($tag->name)) {
+			return $data;
+		}
 		if (version_compare($current_tag, $tag->name, '<')) {
 			$data->version = $tag->name;
 // get commit URL
@@ -107,5 +115,5 @@ function cfghi_cache_data($data) {
 		'timestamp' => time(),
 		'data' => $data
 	);
-	update_option('cfghi_'.$data->repo_url, $val);
+	update_option('cfghi_'.md5($data->repo_url), $val);
 }
