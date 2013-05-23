@@ -59,7 +59,6 @@ function cfghi_get_cached_data($repo_url) {
 }
 
 function cfghi_get_remote_data($repo_url) {
-l(__function__.$repo_url);
 	$data = new stdClass;
 	$data->repo_url = $repo_url;
 	$data->version = '';
